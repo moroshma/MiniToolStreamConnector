@@ -3,7 +3,7 @@ module github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector
 go 1.24.0
 
 require (
-	github.com/moroshma/MiniToolStreamConnector/model v0.0.4
+	github.com/moroshma/MiniToolStreamConnector/model v0.1.1
 	google.golang.org/grpc v1.77.0
 )
 
