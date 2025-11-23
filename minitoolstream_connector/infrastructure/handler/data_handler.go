@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
@@ -15,18 +14,6 @@ type DataHandler struct {
 	contentType string
 	headers     map[string]string
 	logger      Logger
-}
-
-// Logger defines the logging interface
-type Logger interface {
-	Printf(format string, v ...interface{})
-}
-
-// defaultLogger is a default logger implementation
-type defaultLogger struct{}
-
-func (l *defaultLogger) Printf(format string, v ...interface{}) {
-	log.Printf(format, v...)
 }
 
 // DataHandlerConfig represents configuration for DataHandler
@@ -73,7 +60,7 @@ func (h *DataHandler) WithHeaders(headers map[string]string) *DataHandler {
 }
 
 // Prepare prepares raw data for publishing
-func (h *DataHandler) Prepare(ctx context.Context) (*domain.Message, error) {
+func (h *DataHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) {
 	h.logger.Printf("[%s] Preparing data (%d bytes)", h.subject, len(h.data))
 
 	// Build headers
@@ -86,7 +73,7 @@ func (h *DataHandler) Prepare(ctx context.Context) (*domain.Message, error) {
 		headers[k] = v
 	}
 
-	return &domain.Message{
+	return &domain.PublishMessage{
 		Subject: h.subject,
 		Data:    h.data,
 		Headers: headers,

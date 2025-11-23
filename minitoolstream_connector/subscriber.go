@@ -1,16 +1,32 @@
-package subscriber
+package minitoolstream_connector
 
 import (
 	"fmt"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/client"
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/usecase"
+	"google.golang.org/grpc"
+
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+	grpcClient "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/grpc"
+	subscriberUsecase "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/subscriber"
 )
 
+// Subscriber re-exports domain.Subscriber interface
+type Subscriber = domain.Subscriber
+
+// ReceivedMessage re-exports domain.ReceivedMessage
+type ReceivedMessage = domain.ReceivedMessage
+
+// Notification re-exports domain.Notification
+type Notification = domain.Notification
+
+// MessageHandler re-exports domain.MessageHandler
+type MessageHandler = domain.MessageHandler
+
+// MessageHandlerFunc re-exports domain.MessageHandlerFunc
+type MessageHandlerFunc = domain.MessageHandlerFunc
+
 // NewSubscriber creates a new subscriber with default configuration
-// This is a convenience function that combines client and subscriber creation
-func NewSubscriber(serverAddr string, durableName string) (domain.Subscriber, error) {
+func NewSubscriber(serverAddr string, durableName string, opts ...grpc.DialOption) (Subscriber, error) {
 	if serverAddr == "" {
 		return nil, fmt.Errorf("server address is required")
 	}
@@ -20,21 +36,19 @@ func NewSubscriber(serverAddr string, durableName string) (domain.Subscriber, er
 	}
 
 	// Create gRPC client
-	grpcClient, err := client.NewGRPCClient(&client.Config{
-		ServerAddr: serverAddr,
-	})
+	client, err := grpcClient.NewEgressClient(serverAddr, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC client: %w", err)
 	}
 
 	// Create subscriber
-	sub, err := usecase.New(&usecase.Config{
-		Client:      grpcClient,
+	sub, err := subscriberUsecase.New(&subscriberUsecase.Config{
+		Client:      client,
 		DurableName: durableName,
 		BatchSize:   10,
 	})
 	if err != nil {
-		grpcClient.Close()
+		client.Close()
 		return nil, fmt.Errorf("failed to create subscriber: %w", err)
 	}
 
@@ -46,7 +60,8 @@ type SubscriberBuilder struct {
 	serverAddr  string
 	durableName string
 	batchSize   int32
-	logger      usecase.Logger
+	dialOpts    []grpc.DialOption
+	logger      subscriberUsecase.Logger
 	err         error
 }
 
@@ -70,14 +85,20 @@ func (b *SubscriberBuilder) WithBatchSize(batchSize int32) *SubscriberBuilder {
 	return b
 }
 
+// WithDialOptions sets custom dial options
+func (b *SubscriberBuilder) WithDialOptions(opts ...grpc.DialOption) *SubscriberBuilder {
+	b.dialOpts = opts
+	return b
+}
+
 // WithLogger sets a custom logger
-func (b *SubscriberBuilder) WithLogger(logger usecase.Logger) *SubscriberBuilder {
+func (b *SubscriberBuilder) WithLogger(logger subscriberUsecase.Logger) *SubscriberBuilder {
 	b.logger = logger
 	return b
 }
 
 // Build creates the subscriber instance
-func (b *SubscriberBuilder) Build() (domain.Subscriber, error) {
+func (b *SubscriberBuilder) Build() (Subscriber, error) {
 	if b.err != nil {
 		return nil, b.err
 	}
@@ -91,22 +112,20 @@ func (b *SubscriberBuilder) Build() (domain.Subscriber, error) {
 	}
 
 	// Create gRPC client
-	grpcClient, err := client.NewGRPCClient(&client.Config{
-		ServerAddr: b.serverAddr,
-	})
+	client, err := grpcClient.NewEgressClient(b.serverAddr, b.dialOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gRPC client: %w", err)
 	}
 
 	// Create subscriber
-	sub, err := usecase.New(&usecase.Config{
-		Client:      grpcClient,
+	sub, err := subscriberUsecase.New(&subscriberUsecase.Config{
+		Client:      client,
 		DurableName: b.durableName,
 		BatchSize:   b.batchSize,
 		Logger:      b.logger,
 	})
 	if err != nil {
-		grpcClient.Close()
+		client.Close()
 		return nil, fmt.Errorf("failed to create subscriber: %w", err)
 	}
 

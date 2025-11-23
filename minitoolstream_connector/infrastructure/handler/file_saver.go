@@ -3,29 +3,16 @@ package handler
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // FileSaver saves message data to files
 type FileSaver struct {
 	outputDir string
 	logger    Logger
-}
-
-// Logger defines the logging interface
-type Logger interface {
-	Printf(format string, v ...interface{})
-}
-
-// defaultLogger is a default logger implementation
-type defaultLogger struct{}
-
-func (l *defaultLogger) Printf(format string, v ...interface{}) {
-	log.Printf(format, v...)
 }
 
 // FileSaverConfig represents configuration for FileSaver
@@ -53,7 +40,7 @@ func NewFileSaver(config *FileSaverConfig) (*FileSaver, error) {
 }
 
 // Handle saves the message data to a file
-func (h *FileSaver) Handle(ctx context.Context, msg *domain.Message) error {
+func (h *FileSaver) Handle(ctx context.Context, msg *domain.ReceivedMessage) error {
 	// Skip if no data
 	if len(msg.Data) == 0 {
 		h.logger.Printf("   No data to save for sequence %d", msg.Sequence)

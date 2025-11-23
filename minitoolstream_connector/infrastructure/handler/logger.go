@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // LoggerHandler logs message data without saving
@@ -32,7 +32,7 @@ func NewLoggerHandler(config *LoggerHandlerConfig) *LoggerHandler {
 }
 
 // Handle logs the message data
-func (h *LoggerHandler) Handle(ctx context.Context, msg *domain.Message) error {
+func (h *LoggerHandler) Handle(ctx context.Context, msg *domain.ReceivedMessage) error {
 	h.logger.Printf("   [%s] Sequence=%d, Size=%d bytes", h.prefix, msg.Sequence, len(msg.Data))
 
 	// Log headers if present

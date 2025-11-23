@@ -7,7 +7,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // Config represents subscriber configuration

@@ -39,7 +39,7 @@ func NewImageHandler(config *ImageHandlerConfig) *ImageHandler {
 }
 
 // Prepare reads the image file and prepares it for publishing
-func (h *ImageHandler) Prepare(ctx context.Context) (*domain.Message, error) {
+func (h *ImageHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) {
 	// Check if file exists
 	if _, err := os.Stat(h.imagePath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("image file not found: %s", h.imagePath)
@@ -56,7 +56,7 @@ func (h *ImageHandler) Prepare(ctx context.Context) (*domain.Message, error) {
 	// Determine content type from file extension
 	contentType := detectImageContentType(h.imagePath)
 
-	return &domain.Message{
+	return &domain.PublishMessage{
 		Subject: h.subject,
 		Data:    imageData,
 		Headers: map[string]string{

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // ImageProcessor processes and saves image messages
@@ -40,7 +40,7 @@ func NewImageProcessor(config *ImageProcessorConfig) (*ImageProcessor, error) {
 }
 
 // Handle processes and saves the image
-func (h *ImageProcessor) Handle(ctx context.Context, msg *domain.Message) error {
+func (h *ImageProcessor) Handle(ctx context.Context, msg *domain.ReceivedMessage) error {
 	// Skip if no data
 	if len(msg.Data) == 0 {
 		h.logger.Printf("   No image data for sequence %d", msg.Sequence)

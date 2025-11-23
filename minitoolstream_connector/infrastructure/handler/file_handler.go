@@ -42,7 +42,7 @@ func NewFileHandler(config *FileHandlerConfig) *FileHandler {
 }
 
 // Prepare reads the file and prepares it for publishing
-func (h *FileHandler) Prepare(ctx context.Context) (*domain.Message, error) {
+func (h *FileHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) {
 	// Check if file exists
 	if _, err := os.Stat(h.filePath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("file not found: %s", h.filePath)
@@ -62,7 +62,7 @@ func (h *FileHandler) Prepare(ctx context.Context) (*domain.Message, error) {
 		contentType = detectContentType(h.filePath)
 	}
 
-	return &domain.Message{
+	return &domain.PublishMessage{
 		Subject: h.subject,
 		Data:    fileData,
 		Headers: map[string]string{

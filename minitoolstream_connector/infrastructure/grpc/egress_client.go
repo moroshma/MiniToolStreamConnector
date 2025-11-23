@@ -1,4 +1,4 @@
-package client
+package grpc
 
 import (
 	"context"
@@ -7,52 +7,45 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 	pb "github.com/moroshma/MiniToolStreamConnector/model"
 )
 
-// Config represents the gRPC client configuration
-type Config struct {
-	ServerAddr string
-	DialOpts   []grpc.DialOption
-}
-
-// GRPCClient implements domain.EgressClient using gRPC
-type GRPCClient struct {
+// EgressClient implements domain.EgressClient using gRPC
+type EgressClient struct {
 	conn   *grpc.ClientConn
 	client pb.EgressServiceClient
 }
 
-// NewGRPCClient creates a new gRPC client for MiniToolStreamEgress
-func NewGRPCClient(config *Config) (*GRPCClient, error) {
-	if config.ServerAddr == "" {
+// NewEgressClient creates a new gRPC client for MiniToolStreamEgress
+func NewEgressClient(serverAddr string, opts ...grpc.DialOption) (*EgressClient, error) {
+	if serverAddr == "" {
 		return nil, fmt.Errorf("server address is required")
 	}
 
 	// Default dial options if not provided
-	dialOpts := config.DialOpts
-	if dialOpts == nil {
-		dialOpts = []grpc.DialOption{
+	if len(opts) == 0 {
+		opts = []grpc.DialOption{
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		}
 	}
 
 	// Connect to the server
-	conn, err := grpc.NewClient(config.ServerAddr, dialOpts...)
+	conn, err := grpc.NewClient(serverAddr, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to %s: %w", config.ServerAddr, err)
+		return nil, fmt.Errorf("failed to connect to %s: %w", serverAddr, err)
 	}
 
 	client := pb.NewEgressServiceClient(conn)
 
-	return &GRPCClient{
+	return &EgressClient{
 		conn:   conn,
 		client: client,
 	}, nil
 }
 
 // Subscribe subscribes to notifications for a subject
-func (c *GRPCClient) Subscribe(ctx context.Context, config *domain.SubscriptionConfig) (domain.NotificationStream, error) {
+func (c *EgressClient) Subscribe(ctx context.Context, config *domain.SubscriptionConfig) (domain.NotificationStream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("subscription config cannot be nil")
 	}
@@ -80,7 +73,7 @@ func (c *GRPCClient) Subscribe(ctx context.Context, config *domain.SubscriptionC
 }
 
 // Fetch fetches messages from a subject
-func (c *GRPCClient) Fetch(ctx context.Context, config *domain.SubscriptionConfig) (domain.MessageStream, error) {
+func (c *EgressClient) Fetch(ctx context.Context, config *domain.SubscriptionConfig) (domain.MessageStream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("subscription config cannot be nil")
 	}
@@ -104,7 +97,7 @@ func (c *GRPCClient) Fetch(ctx context.Context, config *domain.SubscriptionConfi
 }
 
 // GetLastSequence gets the last sequence number for a subject
-func (c *GRPCClient) GetLastSequence(ctx context.Context, subject string) (uint64, error) {
+func (c *EgressClient) GetLastSequence(ctx context.Context, subject string) (uint64, error) {
 	if subject == "" {
 		return 0, fmt.Errorf("subject cannot be empty")
 	}
@@ -122,7 +115,7 @@ func (c *GRPCClient) GetLastSequence(ctx context.Context, subject string) (uint6
 }
 
 // Close closes the gRPC connection
-func (c *GRPCClient) Close() error {
+func (c *EgressClient) Close() error {
 	if c.conn != nil {
 		return c.conn.Close()
 	}
@@ -151,13 +144,13 @@ type messageStreamAdapter struct {
 	stream pb.EgressService_FetchClient
 }
 
-func (a *messageStreamAdapter) Recv() (*domain.Message, error) {
+func (a *messageStreamAdapter) Recv() (*domain.ReceivedMessage, error) {
 	msg, err := a.stream.Recv()
 	if err != nil {
 		return nil, err
 	}
 
-	return &domain.Message{
+	return &domain.ReceivedMessage{
 		Subject:   msg.Subject,
 		Sequence:  msg.Sequence,
 		Data:      msg.Data,
