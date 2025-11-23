@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package minitoolstream;
 
-option go_package = "github.com/moroshma/minitoolstream_connector/model;minitoolstream_connector";
+option go_package = "github.com/moroshma/MiniToolStreamConnector/model;minitoolstream_connector";
 
 service IngressService {
   rpc Publish(PublishRequest) returns (PublishResponse);

@@ -1,4 +1,4 @@
-module github.com/moroshma/minitoolstream_connector/model
+module github.com/moroshma/MiniToolStreamConnector/model
 
 go 1.24.0
 
