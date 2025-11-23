@@ -3,9 +3,9 @@ package minitoolstream_connector
 import (
 	"fmt"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/client"
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/domain"
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/publisher"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/client"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/publisher"
 )
 
 // NewPublisher creates a new publisher with default configuration

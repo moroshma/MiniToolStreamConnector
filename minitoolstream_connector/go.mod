@@ -1,4 +1,4 @@
-module github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/subscriber
+module github.com/moroshma/minitoolstream_connector/minitoolstream_connector
 
 go 1.24.0
 
@@ -15,4 +15,4 @@ require (
 	google.golang.org/protobuf v1.36.10 // indirect
 )
 
-replace github.com/moroshma/minitoolstream_connector/model => ../../../model
+replace github.com/moroshma/minitoolstream_connector/model => ../model

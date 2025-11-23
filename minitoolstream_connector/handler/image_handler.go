@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
 )
 
 // ImageHandler publishes image files

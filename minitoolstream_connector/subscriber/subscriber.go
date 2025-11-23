@@ -3,9 +3,9 @@ package subscriber
 import (
 	"fmt"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/subscriber/client"
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/subscriber/domain"
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/subscriber/usecase"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber/client"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber/usecase"
 )
 
 // NewSubscriber creates a new subscriber with default configuration

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
 )
 
 // LoggingResultHandler logs publish results

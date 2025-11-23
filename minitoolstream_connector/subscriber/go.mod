@@ -1,4 +1,4 @@
-module github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector
+module github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber
 
 go 1.24.0
 

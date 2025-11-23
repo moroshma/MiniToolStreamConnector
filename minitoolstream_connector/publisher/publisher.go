@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
 )
 
 // Config represents publisher configuration

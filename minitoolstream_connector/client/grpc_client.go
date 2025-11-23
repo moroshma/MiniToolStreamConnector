@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
 	pb "github.com/moroshma/minitoolstream_connector/model"
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/domain"
 )
 
 // Config represents the gRPC client configuration

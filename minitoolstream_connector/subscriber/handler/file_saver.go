@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/moroshma/minitoolstream_connector/pkg/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber/domain"
 )
 
 // FileSaver saves message data to files
