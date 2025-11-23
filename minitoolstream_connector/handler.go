@@ -17,6 +17,7 @@ var (
 var (
 	NewFileSaver      = handler.NewFileSaver
 	NewImageProcessor = handler.NewImageProcessor
+	NewLoggerHandler  = handler.NewLoggerHandler
 )
 
 // Handler configs
@@ -26,4 +27,5 @@ type (
 	ImageHandlerConfig    = handler.ImageHandlerConfig
 	FileSaverConfig       = handler.FileSaverConfig
 	ImageProcessorConfig  = handler.ImageProcessorConfig
+	LoggerHandlerConfig   = handler.LoggerHandlerConfig
 )
