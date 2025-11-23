@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/subscriber/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber/domain"
 )
 
 // LoggerHandler logs message data without saving

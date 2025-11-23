@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // FileHandler publishes files

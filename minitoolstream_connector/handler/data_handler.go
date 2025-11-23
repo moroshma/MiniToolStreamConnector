@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/moroshma/minitoolstream_connector/minitoolstream_connector/domain"
+	"github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
 )
 
 // DataHandler publishes raw data
