@@ -169,7 +169,7 @@ const file_publish_proto_rawDesc = "" +
 	"statusCode\x12#\n" +
 	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage2\\\n" +
 	"\x0eIngressService\x12J\n" +
-	"\aPublish\x12\x1e.minitoolstream.PublishRequest\x1a\x1f.minitoolstream.PublishResponseBMZKgithub.com/moroshma/MiniToolStreamConnector/model;minitoolstream_connectorb\x06proto3"
+	"\aPublish\x12\x1e.minitoolstream.PublishRequest\x1a\x1f.minitoolstream.PublishResponseBLZJgithub.com/moroshma/MiniToolStreamConnector/model;minitoolstream_connectorb\x06proto3"
 
 var (
 	file_publish_proto_rawDescOnce sync.Once

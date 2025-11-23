@@ -394,7 +394,7 @@ const file_read_proto_rawDesc = "" +
 	"\rEgressService\x12M\n" +
 	"\tSubscribe\x12 .minitoolstream.SubscribeRequest\x1a\x1c.minitoolstream.Notification0\x01\x12@\n" +
 	"\x05Fetch\x12\x1c.minitoolstream.FetchRequest\x1a\x17.minitoolstream.Message0\x01\x12b\n" +
-	"\x0fGetLastSequence\x12&.minitoolstream.GetLastSequenceRequest\x1a'.minitoolstream.GetLastSequenceResponseBMZKgithub.com/moroshma/MiniToolStreamConnector/model;minitoolstream_connectorb\x06proto3"
+	"\x0fGetLastSequence\x12&.minitoolstream.GetLastSequenceRequest\x1a'.minitoolstream.GetLastSequenceResponseBLZJgithub.com/moroshma/MiniToolStreamConnector/model;minitoolstream_connectorb\x06proto3"
 
 var (
 	file_read_proto_rawDescOnce sync.Once
