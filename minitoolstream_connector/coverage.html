@@ -1,0 +1,1790 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>domain: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain/entities.go (100.0%)</option>
+				
+				<option value="file1">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain/interfaces.go (100.0%)</option>
+				
+				<option value="file2">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/grpc/egress_client.go (89.6%)</option>
+				
+				<option value="file3">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/grpc/ingress_client.go (81.0%)</option>
+				
+				<option value="file4">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/common.go (100.0%)</option>
+				
+				<option value="file5">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/data_handler.go (100.0%)</option>
+				
+				<option value="file6">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/file_handler.go (95.7%)</option>
+				
+				<option value="file7">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/file_saver.go (93.5%)</option>
+				
+				<option value="file8">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/image_handler.go (95.2%)</option>
+				
+				<option value="file9">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/image_processor.go (93.8%)</option>
+				
+				<option value="file10">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/handler/logger.go (100.0%)</option>
+				
+				<option value="file11">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/publisher.go (40.7%)</option>
+				
+				<option value="file12">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/subscriber.go (62.9%)</option>
+				
+				<option value="file13">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/publisher/publisher.go (97.2%)</option>
+				
+				<option value="file14">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/publisher/result_handler.go (100.0%)</option>
+				
+				<option value="file15">github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/subscriber/subscriber.go (85.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package domain
+
+import (
+        "context"
+        "time"
+)
+
+// PublishMessage represents a message to be published to Ingress
+type PublishMessage struct {
+        Subject string
+        Data    []byte
+        Headers map[string]string
+}
+
+// ReceivedMessage represents a message received from Egress
+type ReceivedMessage struct {
+        Subject   string
+        Sequence  uint64
+        Data      []byte
+        Headers   map[string]string
+        Timestamp time.Time
+}
+
+// PublishResult represents the result of a publish operation
+type PublishResult struct {
+        Sequence     uint64
+        ObjectName   string
+        StatusCode   int64
+        ErrorMessage string
+}
+
+// Notification represents a notification about new messages
+type Notification struct {
+        Subject  string
+        Sequence uint64
+}
+
+// SubscriptionConfig represents subscription configuration
+type SubscriptionConfig struct {
+        Subject       string
+        DurableName   string
+        StartSequence *uint64
+        BatchSize     int32
+}
+
+// MessagePreparer prepares messages for publishing
+type MessagePreparer interface {
+        Prepare(ctx context.Context) (*PublishMessage, error)
+}
+
+// MessagePreparerFunc is a function adapter for MessagePreparer
+type MessagePreparerFunc func(ctx context.Context) (*PublishMessage, error)
+
+// Prepare implements MessagePreparer interface
+func (f MessagePreparerFunc) Prepare(ctx context.Context) (*PublishMessage, error) <span class="cov8" title="1">{
+        return f(ctx)
+}</span>
+
+// ResultHandler processes publish results
+type ResultHandler interface {
+        Handle(ctx context.Context, result *PublishResult) error
+}
+
+// ResultHandlerFunc is a function adapter for ResultHandler
+type ResultHandlerFunc func(ctx context.Context, result *PublishResult) error
+
+// Handle implements ResultHandler interface
+func (f ResultHandlerFunc) Handle(ctx context.Context, result *PublishResult) error <span class="cov8" title="1">{
+        return f(ctx, result)
+}</span>
+
+// MessageHandler processes received messages
+type MessageHandler interface {
+        Handle(ctx context.Context, msg *ReceivedMessage) error
+}
+
+// MessageHandlerFunc is a function adapter for MessageHandler
+type MessageHandlerFunc func(ctx context.Context, msg *ReceivedMessage) error
+
+// Handle implements MessageHandler interface
+func (f MessageHandlerFunc) Handle(ctx context.Context, msg *ReceivedMessage) error <span class="cov8" title="1">{
+        return f(ctx, msg)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package domain
+
+import (
+        "context"
+        "io"
+)
+
+// IngressClient represents the interface for communicating with MiniToolStreamIngress
+type IngressClient interface {
+        Publish(ctx context.Context, msg *PublishMessage) (*PublishResult, error)
+        Close() error
+}
+
+// EgressClient represents the interface for communicating with MiniToolStreamEgress
+type EgressClient interface {
+        Subscribe(ctx context.Context, config *SubscriptionConfig) (NotificationStream, error)
+        Fetch(ctx context.Context, config *SubscriptionConfig) (MessageStream, error)
+        GetLastSequence(ctx context.Context, subject string) (uint64, error)
+        Close() error
+}
+
+// NotificationStream represents a stream of notifications
+type NotificationStream interface {
+        Recv() (*Notification, error)
+}
+
+// MessageStream represents a stream of messages
+type MessageStream interface {
+        Recv() (*ReceivedMessage, error)
+}
+
+// Publisher represents the interface for publishing messages
+type Publisher interface {
+        Publish(ctx context.Context, preparer MessagePreparer) error
+        PublishAll(ctx context.Context, preparers []MessagePreparer) error
+        RegisterHandler(preparer MessagePreparer)
+        RegisterHandlers(preparers []MessagePreparer)
+        SetResultHandler(handler ResultHandler)
+        Close() error
+}
+
+// Subscriber represents the interface for subscribing to subjects
+type Subscriber interface {
+        RegisterHandler(subject string, handler MessageHandler)
+        RegisterHandlers(handlers map[string]MessageHandler)
+        Start() error
+        Stop()
+        Wait()
+}
+
+// IsEOF checks if error is EOF
+func IsEOF(err error) bool <span class="cov8" title="1">{
+        return err == io.EOF
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package grpc
+
+import (
+        "context"
+        "fmt"
+
+        "google.golang.org/grpc"
+        "google.golang.org/grpc/credentials/insecure"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+        pb "github.com/moroshma/MiniToolStreamConnector/model"
+)
+
+// EgressClient implements domain.EgressClient using gRPC
+type EgressClient struct {
+        conn   *grpc.ClientConn
+        client pb.EgressServiceClient
+}
+
+// NewEgressClient creates a new gRPC client for MiniToolStreamEgress
+func NewEgressClient(serverAddr string, opts ...grpc.DialOption) (*EgressClient, error) <span class="cov8" title="1">{
+        if serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        // Default dial options if not provided
+        <span class="cov8" title="1">if len(opts) == 0 </span><span class="cov0" title="0">{
+                opts = []grpc.DialOption{
+                        grpc.WithTransportCredentials(insecure.NewCredentials()),
+                }
+        }</span>
+
+        // Connect to the server
+        <span class="cov8" title="1">conn, err := grpc.NewClient(serverAddr, opts...)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to connect to %s: %w", serverAddr, err)
+        }</span>
+
+        <span class="cov0" title="0">client := pb.NewEgressServiceClient(conn)
+
+        return &amp;EgressClient{
+                conn:   conn,
+                client: client,
+        }, nil</span>
+}
+
+// Subscribe subscribes to notifications for a subject
+func (c *EgressClient) Subscribe(ctx context.Context, config *domain.SubscriptionConfig) (domain.NotificationStream, error) <span class="cov8" title="1">{
+        if config == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subscription config cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if config.Subject == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subject cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">req := &amp;pb.SubscribeRequest{
+                Subject:     config.Subject,
+                DurableName: config.DurableName,
+        }
+
+        if config.StartSequence != nil </span><span class="cov8" title="1">{
+                seq := *config.StartSequence
+                req.StartSequence = &amp;seq
+        }</span>
+
+        <span class="cov8" title="1">stream, err := c.client.Subscribe(ctx, req)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subscribe failed: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;notificationStreamAdapter{stream: stream}, nil</span>
+}
+
+// Fetch fetches messages from a subject
+func (c *EgressClient) Fetch(ctx context.Context, config *domain.SubscriptionConfig) (domain.MessageStream, error) <span class="cov8" title="1">{
+        if config == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subscription config cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if config.Subject == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subject cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">req := &amp;pb.FetchRequest{
+                Subject:     config.Subject,
+                DurableName: config.DurableName,
+                BatchSize:   config.BatchSize,
+        }
+
+        stream, err := c.client.Fetch(ctx, req)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("fetch failed: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;messageStreamAdapter{stream: stream}, nil</span>
+}
+
+// GetLastSequence gets the last sequence number for a subject
+func (c *EgressClient) GetLastSequence(ctx context.Context, subject string) (uint64, error) <span class="cov8" title="1">{
+        if subject == "" </span><span class="cov8" title="1">{
+                return 0, fmt.Errorf("subject cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">req := &amp;pb.GetLastSequenceRequest{
+                Subject: subject,
+        }
+
+        resp, err := c.client.GetLastSequence(ctx, req)
+        if err != nil </span><span class="cov8" title="1">{
+                return 0, fmt.Errorf("get last sequence failed: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return resp.LastSequence, nil</span>
+}
+
+// Close closes the gRPC connection
+func (c *EgressClient) Close() error <span class="cov8" title="1">{
+        if c.conn != nil </span><span class="cov0" title="0">{
+                return c.conn.Close()
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// notificationStreamAdapter adapts gRPC stream to domain.NotificationStream
+type notificationStreamAdapter struct {
+        stream pb.EgressService_SubscribeClient
+}
+
+func (a *notificationStreamAdapter) Recv() (*domain.Notification, error) <span class="cov8" title="1">{
+        notification, err := a.stream.Recv()
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;domain.Notification{
+                Subject:  notification.Subject,
+                Sequence: notification.Sequence,
+        }, nil</span>
+}
+
+// messageStreamAdapter adapts gRPC stream to domain.MessageStream
+type messageStreamAdapter struct {
+        stream pb.EgressService_FetchClient
+}
+
+func (a *messageStreamAdapter) Recv() (*domain.ReceivedMessage, error) <span class="cov8" title="1">{
+        msg, err := a.stream.Recv()
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;domain.ReceivedMessage{
+                Subject:   msg.Subject,
+                Sequence:  msg.Sequence,
+                Data:      msg.Data,
+                Headers:   msg.Headers,
+                Timestamp: msg.Timestamp.AsTime(),
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package grpc
+
+import (
+        "context"
+        "fmt"
+
+        "google.golang.org/grpc"
+        "google.golang.org/grpc/credentials/insecure"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+        pb "github.com/moroshma/MiniToolStreamConnector/model"
+)
+
+// IngressClient implements domain.IngressClient using gRPC
+type IngressClient struct {
+        conn   *grpc.ClientConn
+        client pb.IngressServiceClient
+}
+
+// NewIngressClient creates a new gRPC client for MiniToolStreamIngress
+func NewIngressClient(serverAddr string, opts ...grpc.DialOption) (*IngressClient, error) <span class="cov8" title="1">{
+        if serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        // Default dial options if not provided
+        <span class="cov8" title="1">if len(opts) == 0 </span><span class="cov0" title="0">{
+                opts = []grpc.DialOption{
+                        grpc.WithTransportCredentials(insecure.NewCredentials()),
+                }
+        }</span>
+
+        // Connect to the server
+        <span class="cov8" title="1">conn, err := grpc.NewClient(serverAddr, opts...)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("failed to connect to %s: %w", serverAddr, err)
+        }</span>
+
+        <span class="cov0" title="0">client := pb.NewIngressServiceClient(conn)
+
+        return &amp;IngressClient{
+                conn:   conn,
+                client: client,
+        }, nil</span>
+}
+
+// Publish publishes a message to the specified subject
+func (c *IngressClient) Publish(ctx context.Context, msg *domain.PublishMessage) (*domain.PublishResult, error) <span class="cov8" title="1">{
+        if msg == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("message cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if msg.Subject == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("subject cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">req := &amp;pb.PublishRequest{
+                Subject: msg.Subject,
+                Data:    msg.Data,
+                Headers: msg.Headers,
+        }
+
+        resp, err := c.client.Publish(ctx, req)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("publish failed: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;domain.PublishResult{
+                Sequence:     resp.Sequence,
+                ObjectName:   resp.ObjectName,
+                StatusCode:   resp.StatusCode,
+                ErrorMessage: resp.ErrorMessage,
+        }, nil</span>
+}
+
+// Close closes the gRPC connection
+func (c *IngressClient) Close() error <span class="cov8" title="1">{
+        if c.conn != nil </span><span class="cov0" title="0">{
+                return c.conn.Close()
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package handler
+
+import "log"
+
+// Logger defines the logging interface
+type Logger interface {
+        Printf(format string, v ...interface{})
+}
+
+// defaultLogger is a default logger implementation
+type defaultLogger struct{}
+
+func (l *defaultLogger) Printf(format string, v ...interface{}) <span class="cov8" title="1">{
+        log.Printf(format, v...)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package handler
+
+import (
+        "context"
+        "time"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// DataHandler publishes raw data
+type DataHandler struct {
+        subject     string
+        data        []byte
+        contentType string
+        headers     map[string]string
+        logger      Logger
+}
+
+// DataHandlerConfig represents configuration for DataHandler
+type DataHandlerConfig struct {
+        Subject     string
+        Data        []byte
+        ContentType string
+        Headers     map[string]string
+        Logger      Logger
+}
+
+// NewDataHandler creates a new data handler
+func NewDataHandler(config *DataHandlerConfig) *DataHandler <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">headers := config.Headers
+        if headers == nil </span><span class="cov8" title="1">{
+                headers = make(map[string]string)
+        }</span>
+
+        <span class="cov8" title="1">contentType := config.ContentType
+        if contentType == "" </span><span class="cov8" title="1">{
+                contentType = "application/octet-stream"
+        }</span>
+
+        <span class="cov8" title="1">return &amp;DataHandler{
+                subject:     config.Subject,
+                data:        config.Data,
+                contentType: contentType,
+                headers:     headers,
+                logger:      logger,
+        }</span>
+}
+
+// WithHeaders adds custom headers to the handler
+func (h *DataHandler) WithHeaders(headers map[string]string) *DataHandler <span class="cov8" title="1">{
+        for k, v := range headers </span><span class="cov8" title="1">{
+                h.headers[k] = v
+        }</span>
+        <span class="cov8" title="1">return h</span>
+}
+
+// Prepare prepares raw data for publishing
+func (h *DataHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) <span class="cov8" title="1">{
+        h.logger.Printf("[%s] Preparing data (%d bytes)", h.subject, len(h.data))
+
+        // Build headers
+        headers := make(map[string]string)
+        headers["content-type"] = h.contentType
+        headers["timestamp"] = time.Now().Format(time.RFC3339)
+
+        // Add custom headers
+        for k, v := range h.headers </span><span class="cov8" title="1">{
+                headers[k] = v
+        }</span>
+
+        <span class="cov8" title="1">return &amp;domain.PublishMessage{
+                Subject: h.subject,
+                Data:    h.data,
+                Headers: headers,
+        }, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+        "time"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// FileHandler publishes files
+type FileHandler struct {
+        subject     string
+        filePath    string
+        contentType string
+        logger      Logger
+}
+
+// FileHandlerConfig represents configuration for FileHandler
+type FileHandlerConfig struct {
+        Subject     string
+        FilePath    string
+        ContentType string
+        Logger      Logger
+}
+
+// NewFileHandler creates a new file handler
+func NewFileHandler(config *FileHandlerConfig) *FileHandler <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">return &amp;FileHandler{
+                subject:     config.Subject,
+                filePath:    config.FilePath,
+                contentType: config.ContentType,
+                logger:      logger,
+        }</span>
+}
+
+// Prepare reads the file and prepares it for publishing
+func (h *FileHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) <span class="cov8" title="1">{
+        // Check if file exists
+        if _, err := os.Stat(h.filePath); os.IsNotExist(err) </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("file not found: %s", h.filePath)
+        }</span>
+
+        // Read file
+        <span class="cov8" title="1">fileData, err := os.ReadFile(h.filePath)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to read file %s: %w", h.filePath, err)
+        }</span>
+
+        <span class="cov8" title="1">h.logger.Printf("[%s] Read file: %s (%d bytes)", h.subject, h.filePath, len(fileData))
+
+        // Determine content type if not specified
+        contentType := h.contentType
+        if contentType == "" </span><span class="cov8" title="1">{
+                contentType = detectContentType(h.filePath)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;domain.PublishMessage{
+                Subject: h.subject,
+                Data:    fileData,
+                Headers: map[string]string{
+                        "content-type": contentType,
+                        "filename":     filepath.Base(h.filePath),
+                        "timestamp":    time.Now().Format(time.RFC3339),
+                },
+        }, nil</span>
+}
+
+// detectContentType attempts to detect content type from file extension
+func detectContentType(filePath string) string <span class="cov8" title="1">{
+        ext := filepath.Ext(filePath)
+        switch ext </span>{
+        case ".json":<span class="cov8" title="1">
+                return "application/json"</span>
+        case ".xml":<span class="cov8" title="1">
+                return "application/xml"</span>
+        case ".txt":<span class="cov8" title="1">
+                return "text/plain"</span>
+        case ".html":<span class="cov8" title="1">
+                return "text/html"</span>
+        case ".pdf":<span class="cov8" title="1">
+                return "application/pdf"</span>
+        case ".zip":<span class="cov8" title="1">
+                return "application/zip"</span>
+        default:<span class="cov8" title="1">
+                return "application/octet-stream"</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// FileSaver saves message data to files
+type FileSaver struct {
+        outputDir string
+        logger    Logger
+}
+
+// FileSaverConfig represents configuration for FileSaver
+type FileSaverConfig struct {
+        OutputDir string
+        Logger    Logger
+}
+
+// NewFileSaver creates a new file saver handler
+func NewFileSaver(config *FileSaverConfig) (*FileSaver, error) <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        // Create output directory if it doesn't exist
+        <span class="cov8" title="1">if err := os.MkdirAll(config.OutputDir, 0755); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create output directory %s: %w", config.OutputDir, err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;FileSaver{
+                outputDir: config.OutputDir,
+                logger:    logger,
+        }, nil</span>
+}
+
+// Handle saves the message data to a file
+func (h *FileSaver) Handle(ctx context.Context, msg *domain.ReceivedMessage) error <span class="cov8" title="1">{
+        // Skip if no data
+        if len(msg.Data) == 0 </span><span class="cov8" title="1">{
+                h.logger.Printf("   No data to save for sequence %d", msg.Sequence)
+                return nil
+        }</span>
+
+        // Print headers
+        <span class="cov8" title="1">if len(msg.Headers) &gt; 0 </span><span class="cov8" title="1">{
+                h.logger.Printf("   Headers: %v", msg.Headers)
+        }</span>
+
+        // Generate filename
+        <span class="cov8" title="1">filename := filepath.Join(h.outputDir, fmt.Sprintf("%s_seq_%d", msg.Subject, msg.Sequence))
+
+        // Add extension based on content-type
+        if contentType, ok := msg.Headers["content-type"]; ok </span><span class="cov8" title="1">{
+                ext := getFileExtension(contentType)
+                if ext != "" </span><span class="cov8" title="1">{
+                        filename += ext
+                }</span>
+        }
+
+        // Save to file
+        <span class="cov8" title="1">if err := os.WriteFile(filename, msg.Data, 0644); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to save file: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">h.logger.Printf("   ✓ Saved to: %s", filename)
+        return nil</span>
+}
+
+// getFileExtension returns file extension for content type
+func getFileExtension(contentType string) string <span class="cov8" title="1">{
+        switch contentType </span>{
+        case "image/jpeg":<span class="cov8" title="1">
+                return ".jpg"</span>
+        case "image/png":<span class="cov8" title="1">
+                return ".png"</span>
+        case "image/gif":<span class="cov8" title="1">
+                return ".gif"</span>
+        case "image/webp":<span class="cov8" title="1">
+                return ".webp"</span>
+        case "text/plain":<span class="cov8" title="1">
+                return ".txt"</span>
+        case "application/json":<span class="cov8" title="1">
+                return ".json"</span>
+        case "application/xml":<span class="cov8" title="1">
+                return ".xml"</span>
+        case "application/pdf":<span class="cov8" title="1">
+                return ".pdf"</span>
+        case "application/octet-stream":<span class="cov8" title="1">
+                return ".bin"</span>
+        default:<span class="cov8" title="1">
+                return ""</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+        "time"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// ImageHandler publishes image files
+type ImageHandler struct {
+        subject   string
+        imagePath string
+        logger    Logger
+}
+
+// ImageHandlerConfig represents configuration for ImageHandler
+type ImageHandlerConfig struct {
+        Subject   string
+        ImagePath string
+        Logger    Logger
+}
+
+// NewImageHandler creates a new image handler
+func NewImageHandler(config *ImageHandlerConfig) *ImageHandler <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">return &amp;ImageHandler{
+                subject:   config.Subject,
+                imagePath: config.ImagePath,
+                logger:    logger,
+        }</span>
+}
+
+// Prepare reads the image file and prepares it for publishing
+func (h *ImageHandler) Prepare(ctx context.Context) (*domain.PublishMessage, error) <span class="cov8" title="1">{
+        // Check if file exists
+        if _, err := os.Stat(h.imagePath); os.IsNotExist(err) </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("image file not found: %s", h.imagePath)
+        }</span>
+
+        // Read image file
+        <span class="cov8" title="1">imageData, err := os.ReadFile(h.imagePath)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to read image file %s: %w", h.imagePath, err)
+        }</span>
+
+        <span class="cov8" title="1">h.logger.Printf("[%s] Read image file: %s (%d bytes)", h.subject, h.imagePath, len(imageData))
+
+        // Determine content type from file extension
+        contentType := detectImageContentType(h.imagePath)
+
+        return &amp;domain.PublishMessage{
+                Subject: h.subject,
+                Data:    imageData,
+                Headers: map[string]string{
+                        "content-type": contentType,
+                        "filename":     filepath.Base(h.imagePath),
+                        "timestamp":    time.Now().Format(time.RFC3339),
+                },
+        }, nil</span>
+}
+
+// detectImageContentType determines image content type from file extension
+func detectImageContentType(imagePath string) string <span class="cov8" title="1">{
+        ext := filepath.Ext(imagePath)
+        switch ext </span>{
+        case ".png":<span class="cov8" title="1">
+                return "image/png"</span>
+        case ".jpg", ".jpeg":<span class="cov8" title="1">
+                return "image/jpeg"</span>
+        case ".gif":<span class="cov8" title="1">
+                return "image/gif"</span>
+        case ".webp":<span class="cov8" title="1">
+                return "image/webp"</span>
+        case ".bmp":<span class="cov8" title="1">
+                return "image/bmp"</span>
+        case ".svg":<span class="cov8" title="1">
+                return "image/svg+xml"</span>
+        default:<span class="cov8" title="1">
+                return "image/jpeg"</span> // default to jpeg
+        }
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "os"
+        "path/filepath"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// ImageProcessor processes and saves image messages
+type ImageProcessor struct {
+        outputDir string
+        logger    Logger
+}
+
+// ImageProcessorConfig represents configuration for ImageProcessor
+type ImageProcessorConfig struct {
+        OutputDir string
+        Logger    Logger
+}
+
+// NewImageProcessor creates a new image processor handler
+func NewImageProcessor(config *ImageProcessorConfig) (*ImageProcessor, error) <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        // Create output directory if it doesn't exist
+        <span class="cov8" title="1">if err := os.MkdirAll(config.OutputDir, 0755); err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create output directory %s: %w", config.OutputDir, err)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;ImageProcessor{
+                outputDir: config.OutputDir,
+                logger:    logger,
+        }, nil</span>
+}
+
+// Handle processes and saves the image
+func (h *ImageProcessor) Handle(ctx context.Context, msg *domain.ReceivedMessage) error <span class="cov8" title="1">{
+        // Skip if no data
+        if len(msg.Data) == 0 </span><span class="cov8" title="1">{
+                h.logger.Printf("   No image data for sequence %d", msg.Sequence)
+                return nil
+        }</span>
+
+        // Get original filename from headers if available
+        <span class="cov8" title="1">var filename string
+        if origFilename, ok := msg.Headers["filename"]; ok </span><span class="cov8" title="1">{
+                filename = filepath.Join(h.outputDir, fmt.Sprintf("%s_seq_%d_%s", msg.Subject, msg.Sequence, origFilename))
+        }</span> else<span class="cov8" title="1"> {
+                // Generate filename based on content-type
+                filename = filepath.Join(h.outputDir, fmt.Sprintf("%s_seq_%d", msg.Subject, msg.Sequence))
+
+                // Add extension based on content-type
+                if contentType, ok := msg.Headers["content-type"]; ok </span><span class="cov8" title="1">{
+                        ext := getImageExtension(contentType)
+                        if ext != "" </span><span class="cov8" title="1">{
+                                filename += ext
+                        }</span>
+                }
+        }
+
+        // Log image metadata
+        <span class="cov8" title="1">h.logger.Printf("   Image: %d bytes", len(msg.Data))
+        if contentType, ok := msg.Headers["content-type"]; ok </span><span class="cov8" title="1">{
+                h.logger.Printf("   Content-Type: %s", contentType)
+        }</span>
+
+        // Save to file
+        <span class="cov8" title="1">if err := os.WriteFile(filename, msg.Data, 0644); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to save image: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">h.logger.Printf("   ✓ Image saved to: %s", filename)
+        return nil</span>
+}
+
+// getImageExtension returns image file extension for content type
+func getImageExtension(contentType string) string <span class="cov8" title="1">{
+        switch contentType </span>{
+        case "image/jpeg":<span class="cov8" title="1">
+                return ".jpg"</span>
+        case "image/png":<span class="cov8" title="1">
+                return ".png"</span>
+        case "image/gif":<span class="cov8" title="1">
+                return ".gif"</span>
+        case "image/webp":<span class="cov8" title="1">
+                return ".webp"</span>
+        case "image/bmp":<span class="cov8" title="1">
+                return ".bmp"</span>
+        case "image/svg+xml":<span class="cov8" title="1">
+                return ".svg"</span>
+        default:<span class="cov8" title="1">
+                return ""</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package handler
+
+import (
+        "context"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// LoggerHandler logs message data without saving
+type LoggerHandler struct {
+        prefix string
+        logger Logger
+}
+
+// LoggerHandlerConfig represents configuration for LoggerHandler
+type LoggerHandlerConfig struct {
+        Prefix string
+        Logger Logger
+}
+
+// NewLoggerHandler creates a new logger handler
+func NewLoggerHandler(config *LoggerHandlerConfig) *LoggerHandler <span class="cov8" title="1">{
+        logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">return &amp;LoggerHandler{
+                prefix: config.Prefix,
+                logger: logger,
+        }</span>
+}
+
+// Handle logs the message data
+func (h *LoggerHandler) Handle(ctx context.Context, msg *domain.ReceivedMessage) error <span class="cov8" title="1">{
+        h.logger.Printf("   [%s] Sequence=%d, Size=%d bytes", h.prefix, msg.Sequence, len(msg.Data))
+
+        // Log headers if present
+        if len(msg.Headers) &gt; 0 </span><span class="cov8" title="1">{
+                h.logger.Printf("   [%s] Headers: %v", h.prefix, msg.Headers)
+        }</span>
+
+        // Log data content if it's text
+        <span class="cov8" title="1">if contentType, ok := msg.Headers["content-type"]; ok </span><span class="cov8" title="1">{
+                if contentType == "text/plain" &amp;&amp; len(msg.Data) &gt; 0 &amp;&amp; len(msg.Data) &lt; 1000 </span><span class="cov8" title="1">{
+                        h.logger.Printf("   [%s] Data: %s", h.prefix, string(msg.Data))
+                }</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package minitoolstream_connector
+
+import (
+        "fmt"
+
+        "google.golang.org/grpc"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+        grpcClient "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/grpc"
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/publisher"
+)
+
+// Publisher re-exports domain.Publisher interface
+type Publisher = domain.Publisher
+
+// PublishMessage re-exports domain.PublishMessage
+type PublishMessage = domain.PublishMessage
+
+// PublishResult re-exports domain.PublishResult
+type PublishResult = domain.PublishResult
+
+// MessagePreparer re-exports domain.MessagePreparer
+type MessagePreparer = domain.MessagePreparer
+
+// MessagePreparerFunc re-exports domain.MessagePreparerFunc
+type MessagePreparerFunc = domain.MessagePreparerFunc
+
+// ResultHandler re-exports domain.ResultHandler
+type ResultHandler = domain.ResultHandler
+
+// ResultHandlerFunc re-exports domain.ResultHandlerFunc
+type ResultHandlerFunc = domain.ResultHandlerFunc
+
+// NewPublisher creates a new publisher with default configuration
+func NewPublisher(serverAddr string, opts ...grpc.DialOption) (Publisher, error) <span class="cov8" title="1">{
+        if serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        // Create gRPC client
+        <span class="cov0" title="0">client, err := grpcClient.NewIngressClient(serverAddr, opts...)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+        }</span>
+
+        // Create publisher
+        <span class="cov0" title="0">pub, err := publisher.New(&amp;publisher.Config{
+                Client: client,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                client.Close()
+                return nil, fmt.Errorf("failed to create publisher: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return pub, nil</span>
+}
+
+// PublisherBuilder provides a fluent interface for building publishers
+type PublisherBuilder struct {
+        serverAddr    string
+        dialOpts      []grpc.DialOption
+        resultHandler domain.ResultHandler
+        err           error
+}
+
+// NewPublisherBuilder creates a new publisher builder
+func NewPublisherBuilder(serverAddr string) *PublisherBuilder <span class="cov8" title="1">{
+        return &amp;PublisherBuilder{
+                serverAddr: serverAddr,
+        }
+}</span>
+
+// WithDialOptions sets custom dial options
+func (b *PublisherBuilder) WithDialOptions(opts ...grpc.DialOption) *PublisherBuilder <span class="cov8" title="1">{
+        b.dialOpts = opts
+        return b
+}</span>
+
+// WithResultHandler sets a custom result handler
+func (b *PublisherBuilder) WithResultHandler(handler domain.ResultHandler) *PublisherBuilder <span class="cov8" title="1">{
+        b.resultHandler = handler
+        return b
+}</span>
+
+// Build creates the publisher instance
+func (b *PublisherBuilder) Build() (Publisher, error) <span class="cov8" title="1">{
+        if b.err != nil </span><span class="cov8" title="1">{
+                return nil, b.err
+        }</span>
+
+        <span class="cov8" title="1">if b.serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        // Create gRPC client
+        <span class="cov0" title="0">client, err := grpcClient.NewIngressClient(b.serverAddr, b.dialOpts...)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+        }</span>
+
+        // Create publisher
+        <span class="cov0" title="0">pub, err := publisher.New(&amp;publisher.Config{
+                Client:        client,
+                ResultHandler: b.resultHandler,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                client.Close()
+                return nil, fmt.Errorf("failed to create publisher: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return pub, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package minitoolstream_connector
+
+import (
+        "fmt"
+
+        "google.golang.org/grpc"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+        grpcClient "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/infrastructure/grpc"
+        subscriberUsecase "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/usecase/subscriber"
+)
+
+// Subscriber re-exports domain.Subscriber interface
+type Subscriber = domain.Subscriber
+
+// ReceivedMessage re-exports domain.ReceivedMessage
+type ReceivedMessage = domain.ReceivedMessage
+
+// Notification re-exports domain.Notification
+type Notification = domain.Notification
+
+// MessageHandler re-exports domain.MessageHandler
+type MessageHandler = domain.MessageHandler
+
+// MessageHandlerFunc re-exports domain.MessageHandlerFunc
+type MessageHandlerFunc = domain.MessageHandlerFunc
+
+// NewSubscriber creates a new subscriber with default configuration
+func NewSubscriber(serverAddr string, durableName string, opts ...grpc.DialOption) (Subscriber, error) <span class="cov8" title="1">{
+        if serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        <span class="cov0" title="0">if durableName == "" </span><span class="cov0" title="0">{
+                durableName = "default-subscriber"
+        }</span>
+
+        // Create gRPC client
+        <span class="cov0" title="0">client, err := grpcClient.NewEgressClient(serverAddr, opts...)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+        }</span>
+
+        // Create subscriber
+        <span class="cov0" title="0">sub, err := subscriberUsecase.New(&amp;subscriberUsecase.Config{
+                Client:      client,
+                DurableName: durableName,
+                BatchSize:   10,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                client.Close()
+                return nil, fmt.Errorf("failed to create subscriber: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return sub, nil</span>
+}
+
+// SubscriberBuilder provides a fluent interface for building subscribers
+type SubscriberBuilder struct {
+        serverAddr  string
+        durableName string
+        batchSize   int32
+        dialOpts    []grpc.DialOption
+        logger      subscriberUsecase.Logger
+        err         error
+}
+
+// NewSubscriberBuilder creates a new subscriber builder
+func NewSubscriberBuilder(serverAddr string) *SubscriberBuilder <span class="cov8" title="1">{
+        return &amp;SubscriberBuilder{
+                serverAddr: serverAddr,
+                batchSize:  10,
+        }
+}</span>
+
+// WithDurableName sets the durable name
+func (b *SubscriberBuilder) WithDurableName(durableName string) *SubscriberBuilder <span class="cov8" title="1">{
+        b.durableName = durableName
+        return b
+}</span>
+
+// WithBatchSize sets the batch size for fetching messages
+func (b *SubscriberBuilder) WithBatchSize(batchSize int32) *SubscriberBuilder <span class="cov8" title="1">{
+        b.batchSize = batchSize
+        return b
+}</span>
+
+// WithDialOptions sets custom dial options
+func (b *SubscriberBuilder) WithDialOptions(opts ...grpc.DialOption) *SubscriberBuilder <span class="cov8" title="1">{
+        b.dialOpts = opts
+        return b
+}</span>
+
+// WithLogger sets a custom logger
+func (b *SubscriberBuilder) WithLogger(logger subscriberUsecase.Logger) *SubscriberBuilder <span class="cov8" title="1">{
+        b.logger = logger
+        return b
+}</span>
+
+// Build creates the subscriber instance
+func (b *SubscriberBuilder) Build() (Subscriber, error) <span class="cov8" title="1">{
+        if b.err != nil </span><span class="cov8" title="1">{
+                return nil, b.err
+        }</span>
+
+        <span class="cov8" title="1">if b.serverAddr == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("server address is required")
+        }</span>
+
+        <span class="cov8" title="1">if b.durableName == "" </span><span class="cov8" title="1">{
+                b.durableName = "default-subscriber"
+        }</span>
+
+        // Create gRPC client
+        <span class="cov8" title="1">client, err := grpcClient.NewEgressClient(b.serverAddr, b.dialOpts...)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to create gRPC client: %w", err)
+        }</span>
+
+        // Create subscriber
+        <span class="cov8" title="1">sub, err := subscriberUsecase.New(&amp;subscriberUsecase.Config{
+                Client:      client,
+                DurableName: b.durableName,
+                BatchSize:   b.batchSize,
+                Logger:      b.logger,
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                client.Close()
+                return nil, fmt.Errorf("failed to create subscriber: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return sub, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package publisher
+
+import (
+        "context"
+        "fmt"
+        "log"
+        "sync"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// Config represents publisher configuration
+type Config struct {
+        Client        domain.IngressClient
+        ResultHandler domain.ResultHandler
+        Logger        Logger
+}
+
+// Logger defines the logging interface
+type Logger interface {
+        Printf(format string, v ...interface{})
+}
+
+// defaultLogger is a default logger implementation
+type defaultLogger struct{}
+
+func (l *defaultLogger) Printf(format string, v ...interface{}) <span class="cov0" title="0">{
+        log.Printf(format, v...)
+}</span>
+
+// SimplePublisher implements domain.Publisher
+type SimplePublisher struct {
+        client        domain.IngressClient
+        resultHandler domain.ResultHandler
+        logger        Logger
+        preparers     []domain.MessagePreparer
+        mu            sync.RWMutex
+}
+
+// New creates a new publisher instance
+func New(config *Config) (*SimplePublisher, error) <span class="cov8" title="1">{
+        if config == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("config cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if config.Client == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("client cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">resultHandler := config.ResultHandler
+        if resultHandler == nil </span><span class="cov8" title="1">{
+                resultHandler = NewLoggingResultHandler(logger, true)
+        }</span>
+
+        <span class="cov8" title="1">return &amp;SimplePublisher{
+                client:        config.Client,
+                resultHandler: resultHandler,
+                logger:        logger,
+                preparers:     make([]domain.MessagePreparer, 0),
+        }, nil</span>
+}
+
+// RegisterHandler registers a message preparer
+func (p *SimplePublisher) RegisterHandler(preparer domain.MessagePreparer) <span class="cov8" title="1">{
+        p.mu.Lock()
+        defer p.mu.Unlock()
+        p.preparers = append(p.preparers, preparer)
+        p.logger.Printf("✓ Registered message preparer (total: %d)", len(p.preparers))
+}</span>
+
+// RegisterHandlers registers multiple message preparers
+func (p *SimplePublisher) RegisterHandlers(preparers []domain.MessagePreparer) <span class="cov8" title="1">{
+        p.mu.Lock()
+        defer p.mu.Unlock()
+        for _, preparer := range preparers </span><span class="cov8" title="1">{
+                p.preparers = append(p.preparers, preparer)
+        }</span>
+        <span class="cov8" title="1">p.logger.Printf("✓ Registered %d message preparers (total: %d)", len(preparers), len(p.preparers))</span>
+}
+
+// SetResultHandler sets a custom result handler
+func (p *SimplePublisher) SetResultHandler(handler domain.ResultHandler) <span class="cov8" title="1">{
+        p.mu.Lock()
+        defer p.mu.Unlock()
+        p.resultHandler = handler
+        p.logger.Printf("✓ Custom result handler set")
+}</span>
+
+// Publish publishes a single message
+func (p *SimplePublisher) Publish(ctx context.Context, preparer domain.MessagePreparer) error <span class="cov8" title="1">{
+        return p.publishOne(ctx, 1, preparer)
+}</span>
+
+// PublishAll publishes all registered message preparers concurrently
+func (p *SimplePublisher) PublishAll(ctx context.Context, preparers []domain.MessagePreparer) error <span class="cov8" title="1">{
+        if len(preparers) == 0 </span><span class="cov8" title="1">{
+                p.mu.RLock()
+                preparers = p.preparers
+                p.mu.RUnlock()
+        }</span>
+
+        <span class="cov8" title="1">if len(preparers) == 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("no message preparers to publish")
+        }</span>
+
+        <span class="cov8" title="1">p.logger.Printf("Publishing %d messages...", len(preparers))
+
+        var wg sync.WaitGroup
+        errChan := make(chan error, len(preparers))
+
+        for i, preparer := range preparers </span><span class="cov8" title="1">{
+                wg.Add(1)
+                go func(idx int, prep domain.MessagePreparer) </span><span class="cov8" title="1">{
+                        defer wg.Done()
+                        if err := p.publishOne(ctx, idx+1, prep); err != nil </span><span class="cov8" title="1">{
+                                errChan &lt;- fmt.Errorf("message %d: %w", idx+1, err)
+                        }</span>
+                }(i, preparer)
+        }
+
+        <span class="cov8" title="1">wg.Wait()
+        close(errChan)
+
+        // Collect errors
+        var errs []error
+        for err := range errChan </span><span class="cov8" title="1">{
+                errs = append(errs, err)
+        }</span>
+
+        <span class="cov8" title="1">if len(errs) &gt; 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("failed to publish %d messages: %v", len(errs), errs)
+        }</span>
+
+        <span class="cov8" title="1">p.logger.Printf("✓ All %d messages published successfully", len(preparers))
+        return nil</span>
+}
+
+// publishOne publishes a single message
+func (p *SimplePublisher) publishOne(ctx context.Context, idx int, preparer domain.MessagePreparer) error <span class="cov8" title="1">{
+        p.logger.Printf("[%d] Preparing message...", idx)
+
+        // Prepare message
+        msg, err := preparer.Prepare(ctx)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("failed to prepare message: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">if msg == nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("preparer returned nil message")
+        }</span>
+
+        // Publish message
+        <span class="cov8" title="1">p.logger.Printf("[%d] Publishing to subject '%s'...", idx, msg.Subject)
+        result, err := p.client.Publish(ctx, msg)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("publish failed: %w", err)
+        }</span>
+
+        // Handle result
+        <span class="cov8" title="1">if p.resultHandler != nil </span><span class="cov8" title="1">{
+                if err := p.resultHandler.Handle(ctx, result); err != nil </span><span class="cov0" title="0">{
+                        p.logger.Printf("[%d] Result handler error: %v", idx, err)
+                }</span>
+        }
+
+        <span class="cov8" title="1">if result.StatusCode != 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("server error: %s", result.ErrorMessage)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// Close closes the publisher and underlying client
+func (p *SimplePublisher) Close() error <span class="cov8" title="1">{
+        if p.client != nil </span><span class="cov8" title="1">{
+                if err := p.client.Close(); err != nil </span><span class="cov8" title="1">{
+                        return fmt.Errorf("failed to close client: %w", err)
+                }</span>
+                <span class="cov8" title="1">p.logger.Printf("✓ Publisher closed")</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package publisher
+
+import (
+        "context"
+        "fmt"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// LoggingResultHandler logs publish results
+type LoggingResultHandler struct {
+        logger  Logger
+        verbose bool
+}
+
+// NewLoggingResultHandler creates a new logging result handler
+func NewLoggingResultHandler(logger Logger, verbose bool) *LoggingResultHandler <span class="cov8" title="1">{
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+        <span class="cov8" title="1">return &amp;LoggingResultHandler{
+                logger:  logger,
+                verbose: verbose,
+        }</span>
+}
+
+// Handle logs the publish result
+func (h *LoggingResultHandler) Handle(ctx context.Context, result *domain.PublishResult) error <span class="cov8" title="1">{
+        if result == nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("result cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if result.StatusCode != 0 </span><span class="cov8" title="1">{
+                h.logger.Printf("✗ Publish failed: error=%s", result.ErrorMessage)
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">if h.verbose </span><span class="cov8" title="1">{
+                h.logger.Printf("✓ Published: sequence=%d, object=%s",
+                        result.Sequence, result.ObjectName)
+        }</span> else<span class="cov8" title="1"> {
+                h.logger.Printf("✓ Published: sequence=%d", result.Sequence)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package usecase
+
+import (
+        "context"
+        "fmt"
+        "io"
+        "log"
+        "sync"
+
+        "github.com/moroshma/MiniToolStreamConnector/minitoolstream_connector/domain"
+)
+
+// Config represents subscriber configuration
+type Config struct {
+        Client      domain.EgressClient
+        DurableName string
+        BatchSize   int32
+        Logger      Logger
+}
+
+// Logger defines the logging interface
+type Logger interface {
+        Printf(format string, v ...interface{})
+}
+
+// defaultLogger is a default logger implementation
+type defaultLogger struct{}
+
+func (l *defaultLogger) Printf(format string, v ...interface{}) <span class="cov0" title="0">{
+        log.Printf(format, v...)
+}</span>
+
+// MultiSubject implements domain.Subscriber for multiple subjects
+type MultiSubject struct {
+        client      domain.EgressClient
+        durableName string
+        batchSize   int32
+        logger      Logger
+        handlers    map[string]domain.MessageHandler
+        mu          sync.RWMutex
+        ctx         context.Context
+        cancel      context.CancelFunc
+        wg          sync.WaitGroup
+}
+
+// New creates a new multi-subject subscriber
+func New(config *Config) (*MultiSubject, error) <span class="cov8" title="1">{
+        if config == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("config cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">if config.Client == nil </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("client cannot be nil")
+        }</span>
+
+        <span class="cov8" title="1">logger := config.Logger
+        if logger == nil </span><span class="cov8" title="1">{
+                logger = &amp;defaultLogger{}
+        }</span>
+
+        <span class="cov8" title="1">batchSize := config.BatchSize
+        if batchSize &lt;= 0 </span><span class="cov8" title="1">{
+                batchSize = 10
+        }</span>
+
+        <span class="cov8" title="1">ctx, cancel := context.WithCancel(context.Background())
+
+        return &amp;MultiSubject{
+                client:      config.Client,
+                durableName: config.DurableName,
+                batchSize:   batchSize,
+                logger:      logger,
+                handlers:    make(map[string]domain.MessageHandler),
+                ctx:         ctx,
+                cancel:      cancel,
+        }, nil</span>
+}
+
+// RegisterHandler registers a message handler for a subject
+func (s *MultiSubject) RegisterHandler(subject string, handler domain.MessageHandler) <span class="cov8" title="1">{
+        s.mu.Lock()
+        defer s.mu.Unlock()
+        s.handlers[subject] = handler
+        s.logger.Printf("✓ Registered handler for subject: %s", subject)
+}</span>
+
+// RegisterHandlers registers multiple handlers at once
+func (s *MultiSubject) RegisterHandlers(handlers map[string]domain.MessageHandler) <span class="cov8" title="1">{
+        s.mu.Lock()
+        defer s.mu.Unlock()
+        for subject, handler := range handlers </span><span class="cov8" title="1">{
+                s.handlers[subject] = handler
+                s.logger.Printf("✓ Registered handler for subject: %s", subject)
+        }</span>
+}
+
+// Start starts all subscriptions
+func (s *MultiSubject) Start() error <span class="cov8" title="1">{
+        s.mu.RLock()
+        defer s.mu.RUnlock()
+
+        if len(s.handlers) == 0 </span><span class="cov8" title="1">{
+                return fmt.Errorf("no handlers registered")
+        }</span>
+
+        <span class="cov8" title="1">s.logger.Printf("Starting subscriptions for %d subjects...", len(s.handlers))
+
+        // Start a goroutine for each subject
+        for subject, handler := range s.handlers </span><span class="cov8" title="1">{
+                s.wg.Add(1)
+                go s.subscribeToSubject(subject, handler)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// subscribeToSubject handles subscription for a single subject
+func (s *MultiSubject) subscribeToSubject(subject string, handler domain.MessageHandler) <span class="cov8" title="1">{
+        defer s.wg.Done()
+
+        s.logger.Printf("[%s] Starting subscription...", subject)
+
+        config := &amp;domain.SubscriptionConfig{
+                Subject:     subject,
+                DurableName: s.durableName,
+                BatchSize:   s.batchSize,
+        }
+
+        // Subscribe to notifications
+        notificationStream, err := s.client.Subscribe(s.ctx, config)
+        if err != nil </span><span class="cov0" title="0">{
+                s.logger.Printf("[%s] Failed to subscribe: %v", subject, err)
+                return
+        }</span>
+
+        // Create notification channel
+        <span class="cov8" title="1">notificationChan := make(chan *domain.Notification, 100)
+
+        // Start notification receiver goroutine
+        go func() </span><span class="cov8" title="1">{
+                defer close(notificationChan)
+                for </span><span class="cov8" title="1">{
+                        notification, err := notificationStream.Recv()
+                        if err == io.EOF </span><span class="cov8" title="1">{
+                                s.logger.Printf("[%s] Subscribe stream closed", subject)
+                                return
+                        }</span>
+                        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                                select </span>{
+                                case &lt;-s.ctx.Done():<span class="cov0" title="0">
+                                        return</span>
+                                default:<span class="cov0" title="0">
+                                        s.logger.Printf("[%s] Subscribe error: %v", subject, err)
+                                        return</span>
+                                }
+                        }
+                        <span class="cov8" title="1">s.logger.Printf("[%s] 📬 Notification received: sequence=%d", subject, notification.Sequence)
+                        select </span>{
+                        case notificationChan &lt;- notification:<span class="cov8" title="1"></span>
+                        case &lt;-s.ctx.Done():<span class="cov0" title="0">
+                                return</span>
+                        }
+                }
+        }()
+
+        // Process notifications
+        <span class="cov8" title="1">s.logger.Printf("[%s] Waiting for notifications...", subject)
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-s.ctx.Done():<span class="cov0" title="0">
+                        s.logger.Printf("[%s] Context cancelled, stopping subscription", subject)
+                        return</span>
+
+                case notification, ok := &lt;-notificationChan:<span class="cov8" title="1">
+                        if !ok </span><span class="cov8" title="1">{
+                                s.logger.Printf("[%s] Notification channel closed", subject)
+                                return
+                        }</span>
+
+                        <span class="cov8" title="1">if err := s.processNotification(subject, notification, handler); err != nil </span><span class="cov0" title="0">{
+                                s.logger.Printf("[%s] Error processing notification: %v", subject, err)
+                        }</span>
+                }
+        }
+}
+
+// processNotification fetches and processes messages for a notification
+func (s *MultiSubject) processNotification(subject string, notification *domain.Notification, handler domain.MessageHandler) error <span class="cov8" title="1">{
+        config := &amp;domain.SubscriptionConfig{
+                Subject:     notification.Subject,
+                DurableName: s.durableName,
+                BatchSize:   s.batchSize,
+        }
+
+        // Fetch messages
+        messageStream, err := s.client.Fetch(s.ctx, config)
+        if err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("failed to fetch: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">messageCount := 0
+        for </span><span class="cov8" title="1">{
+                msg, err := messageStream.Recv()
+                if err == io.EOF </span><span class="cov8" title="1">{
+                        break</span>
+                }
+                <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("fetch error: %w", err)
+                }</span>
+
+                <span class="cov8" title="1">messageCount++
+                s.logger.Printf("[%s] 📨 Message received: sequence=%d, data_size=%d",
+                        subject, msg.Sequence, len(msg.Data))
+
+                // Handle message
+                if err := handler.Handle(s.ctx, msg); err != nil </span><span class="cov8" title="1">{
+                        s.logger.Printf("[%s] Handler error for sequence %d: %v", subject, msg.Sequence, err)
+                        // Continue processing other messages even if one fails
+                }</span>
+        }
+
+        <span class="cov8" title="1">s.logger.Printf("[%s] Processed %d messages", subject, messageCount)
+        return nil</span>
+}
+
+// Stop gracefully stops all subscriptions
+func (s *MultiSubject) Stop() <span class="cov8" title="1">{
+        s.logger.Printf("Stopping subscriber...")
+        s.cancel()
+        s.wg.Wait()
+        if err := s.client.Close(); err != nil </span><span class="cov0" title="0">{
+                s.logger.Printf("Error closing client: %v", err)
+        }</span>
+        <span class="cov8" title="1">s.logger.Printf("✓ Subscriber stopped")</span>
+}
+
+// Wait blocks until all subscriptions finish
+func (s *MultiSubject) Wait() <span class="cov8" title="1">{
+        s.wg.Wait()
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
